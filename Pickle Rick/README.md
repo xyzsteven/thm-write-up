@@ -1,4 +1,4 @@
-# TryHackMe: W1seGuy Writeup
+# TryHackMe: Pickle Rick
 
 **Category:** Web Exploitation, Privilege Escalation
 
