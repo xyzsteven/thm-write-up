@@ -62,7 +62,7 @@ To identify hidden endpoints and administrative panels, gobuster was executed us
 ```bash
 gobuster dir --url http://10.49.131.58 --wordlist /usr/share/seclists/Discovery/Web-Content/common.txt -x php,txt,html
 ```
-![Gobuster result](gobuster.png)
+![Gobuster result](assets/gobuster.png)
 
 Key Discoveries:
 
@@ -75,7 +75,7 @@ Inspecting the contents of `http://10.49.131.58/robots.txt` reveals a single str
 ```bash
 curl http://10.49.131.58/robots.txt
 ```
-![curl robots.txt results](robots.png)
+![curl robots.txt results](assets/robots.png)
 
 Given the lack of other clear entry points, this string highly likely serves as the password for the discovered username.
 
@@ -90,18 +90,18 @@ Upon successful authentication, the application redirects to the Command Panel (
 ## ⚡ Phase 3: Exploitation & Filter Bypass
 ### 🧄 Ingredient 1: Web Root Directory
 Executing the ls command within the Command Panel lists the contents of the current working directory (/var/www/html):
-![web dir](dir.png)
+![web dir](assets/dir.png)
 
 When attempting to read the ingredient using the standard `cat` utility (`cat Sup3rS3cretPickl3Ingred.txt`), the web application returns an error: Command disabled. The server implements a denylist filter targeting explicit commands like `cat`.
 
-![disabled](disabled.png)
+![disabled](assets/disabled.png)
 
 To bypass this input validation restriction, i use `curl` command.
 ```bash
 curl http://10.49.131.58/Sup3rS3cretPickl3Ingred.txt
 ```
 
-![curl 1](curl1.png)
+![curl 1](assets/curl1.png)
 
 - Output / Ingredient 1: `mr. meeseek hair`
 
@@ -111,24 +111,24 @@ Next, we inspect clue.txt to find directions for the remaining ingredients:
 curl http://10.49.131.58/clue.txt
 ```
 
-![curl 2](curl2.png)
+![curl 2](assets/curl2.png)
 
 - Output: `Look around the file system for the other ingredient.`
 
 Following the hint, we list the system's home directories to locate user accounts `ls -la /home`.
 
-![home](home.png)
+![home](assets/home.png)
 
 The output shows two user directories: `ubuntu` and `rick`. Listing the contents of Rick's home directory reveals the second ingredient, `ls -la /home/rick`
 
-![rickdir1](rickdir1.png)
+![rickdir1](assets/rickdir1.png)
 
 - Discovered File: `second ingredients`
 
 Because the filename contains a space and the `cat` command remains restricted, we wrap the absolute path in double quotes and invoke `less`:
 `less "/home/rick/second ingredients"`
 
-![rickdir2](rickdir2.png)
+![rickdir2](assets/rickdir2.png)
 
 - Output / Ingredient 2: `1 jerry tear`
 
@@ -137,21 +137,21 @@ Because the filename contains a space and the `cat` command remains restricted, 
 To capture the final ingredient, we need to inspect administrative locations, typically restricted to the `root` user. First, we evaluate the current user's privileges within the `sudoers` configuration:
 `sudo -l`
 
-![sudo1](sudo1.png)
+![sudo1](assets/sudo1.png)
 
 This misconfiguration is a critical flaw. The `www-data` service account can execute any command with full superuser privileges without supplying a password.
 
 We leverage this misconfiguration to list the `/root` directory securely:
 `sudo ls -la /root`
 
-![sudo2](sudo2.png)
+![sudo2](assets/sudo2.png)
 
 - Discovered File: `3rd.txt`
 
 Finally, we read the contents of the third ingredient file by combining `sudo` with our filter-bypass command (`less`):
 `sudo less /root/3rd.txt`
 
-![sudo3](sudo3.png)
+![sudo3](assets/sudo3.png)
 
 - Output / Ingredient 3: `fleeb juice`
 
