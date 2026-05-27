@@ -8,7 +8,7 @@
 **W1seGuy** is a cryptography-focused challenge on TryHackMe that requires exploiting a custom XOR encryption implementation. By analyzing the provided source code, we can identify a vulnerability in how the encryption key is generated and applied. Utilizing a **Known-Plaintext Attack (KPA)** combined with a localized brute-force approach, we can retrieve the encryption key and decrypt the flags without needing to brute-force the entire keyspace.
 
 ## 🔍 Code Review & Vulnerability Analysis
-We are provided with a Python script [`source.py`](source-1705339805281.py) that runs on the target server. Let's analyze the core encryption logic:
+We are provided with a Python script [`source.py`](assets/py/source-1705339805281.py) that runs on the target server. Let's analyze the core encryption logic:
 
 ```python
 import random
@@ -76,7 +76,7 @@ Instead of brute-forcing all possible 5-character alphanumeric combinations ($62
 3. Validation: The correct key will yield a decrypted string that ends with a closing curly brace `}`.
 
 ## 💻 Exploit Script
-[`solve.py`](solve.py)
+[`solve.py`](assets/py/solve.py)
 ```python
 import socket
 import string
@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
 ## 🚩 Execution & Results
 Running the script successfully breaks the encryption in a fraction of a second:
-![flag](flag.png)
+![flag](assets/img/flag.png)
 
 ### Flags Captured:
 - Flag 1: `THM{p1alntExtAtt4ckcAnr3alLyhUrty0urxOr}`
